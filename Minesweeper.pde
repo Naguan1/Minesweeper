@@ -43,18 +43,11 @@ public void draw ()
         noLoop();
     }
 }
-public boolean isLost()
-{
-    for(int i = 0; i < mines.size(); i++)
-        if(mines.get(i).isClicked() && !mines.get(i).isMarked())
-            return true;
-    return false;
-}
 public boolean isWon()
 {
     //your code here
     for(int i = 0; i < mines.size(); i++)
-        if(!mines.get(i).isMarked())
+        if(!mines.get(i).isFlagged())
             return false;
     for(int r = 0; r < NUM_ROWS; r++)
         for(int c = 0; c < NUM_COLS; c++)
@@ -62,6 +55,13 @@ public boolean isWon()
                 if(!buttons[r][c].isClicked())
                     return false;
     return true;
+}
+public boolean isLost()
+{
+    for(int i = 0; i < mines.size(); i++)
+        if(mines.get(i).isClicked() && !mines.get(i).isFlagged())
+            return true;
+    return false;
 }
 public void displayLosingMessage()
 {
@@ -109,7 +109,7 @@ public class MSButton
 {
     private int r, c, colr;
     private float x,y, width, height;
-    private boolean clicked, marked;
+    private boolean clicked, flagged;
     private String label;
     
     public MSButton ( int rr, int cc )
@@ -122,12 +122,12 @@ public class MSButton
         x = c*width;
         y = r*height;
         label = "";
-        marked = clicked = false;
+        flagged= clicked = false;
         Interactive.add( this ); // register it with the manager
     }
-    public boolean isMarked()
+    public boolean isFlagged()
     {
-        return marked;
+        return flagged;
     }
     public boolean isClicked()
     {
@@ -141,12 +141,12 @@ public class MSButton
         //your code here
         if(mouseButton == RIGHT)
         {
-            if(marked == false)
-                marked = true;
+            if(flagged == false)
+                flagged = true;
             else
             {
                 clicked = false;
-                marked = false;
+                flagged = false;
             }
         }
         else if(!mines.contains(buttons[r][c]) && countMines(r, c) > 0)
@@ -168,7 +168,7 @@ public class MSButton
 
     public void draw()
     {    
-        if (marked)
+        if (flagged)
             fill(0);
         else if(clicked && mines.contains(this)) 
             fill(255,255,0);
